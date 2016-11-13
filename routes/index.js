@@ -34,7 +34,7 @@ function loadDirectory(directory, callback) {
 			callback(['/img/logo.png']);
 		} else {
 			files.forEach(function(f) {
-				if (f.indexOf('.') === 0 return;
+				if (f.indexOf('.') === 0) return;
 				console.log('Adding: ' + f);
 				imageArray.push('/img/slides/' + directory + '/' + f);
 			});
