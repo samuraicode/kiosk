@@ -1,0 +1,68 @@
+<% include header %>
+
+<div class="wrapper">
+	<img class="slide">
+</div>
+
+<img class="logomark" src="/img/logo.png">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script>
+
+$.fn.extend({
+    animateCss: function (animationName, callback) {
+        var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+        this.addClass('animated ' + animationName).one(animationEnd, function() {
+            $(this).removeClass('animated ' + animationName);
+            if (callback) callback();
+        });
+    }
+});
+
+var imageArray = [];
+
+function fetchNext(){
+	$.ajax('/slides/<%= title %>')
+	.done(function(data) {
+		imageArray = data;
+		nextImage();
+	});
+}
+
+function loadSlide(slidePath) {
+	$('.slide').addClass('remove');
+	var nextSlide = new Image();
+	nextSlide.onload = function() {
+		$('.slide').animateCss('fadeOut', function() {
+			$('.remove').remove();
+		});
+		$(this).prependTo($('.wrapper'));
+	};
+	nextSlide.onerror = function() {
+		fetchNext();
+	};
+	$(nextSlide).addClass('slide').animateCss('fadeIn');
+	nextSlide.src = slidePath;
+}
+
+function nextImage() {
+	if (imageArray.length > 0) {
+    	loadSlide(imageArray.pop());
+    } else {
+    	fetchNext();
+    }
+}
+
+$(document).ready(
+    function() {
+        setInterval(function() {
+            nextImage();
+        }, 30000);
+
+        nextImage();
+    }
+);
+
+</script>
+
+<% include footer %>
